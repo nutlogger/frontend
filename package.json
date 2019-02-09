@@ -1,0 +1,41 @@
+{
+  "name": "nutloggerfrontend",
+  "version": "1.0.0",
+  "description": "The frontend of our hackathon project for 2019 uOttahack",
+  "scripts": {
+    "start": "webpack-dev-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nutlogger/frontend.git"
+  },
+  "keywords": [
+    "react"
+  ],
+  "author": "Yong Lin Wang, Anthony Lai, Daniel Wu, Andrew Pratheepan",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/nutlogger/frontend/issues"
+  },
+  "homepage": "https://github.com/nutlogger/frontend#readme",
+  "dependencies": {
+    "@types/react": "^16.8.2",
+    "@types/react-dom": "^16.8.0",
+    "@types/react-redux": "^7.0.1",
+    "@types/redux": "^3.6.0",
+    "antd": "^3.13.2",
+    "css-loader": "^2.1.0",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1",
+    "react-redux": "^6.0.0",
+    "redux": "^4.0.1",
+    "webpack-cli": "^3.2.3"
+  },
+  "devDependencies": {
+    "awesome-typescript-loader": "^5.2.1",
+    "source-map-loader": "^0.2.4",
+    "typescript": "^3.3.3",
+    "webpack-dev-server": "^3.1.14"
+  }
+}
