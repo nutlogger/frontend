@@ -9,6 +9,10 @@
     justify-content: space-between;
 }
 
+.card {
+    margin-bottom: 16px
+}
+
 .no-margin {
     margin: 0;
 }

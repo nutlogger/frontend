@@ -1,7 +1,7 @@
 import * as React from 'react';
+import * as _ from 'lodash';
 
-import { Button, Icon, Row, Col, Card, List, Progress } from 'antd';
-import { UserHeader } from '../components/header';
+import { Button, Icon, Row, Col, Card, List, Progress, Statistic } from 'antd';
 import { Meal } from '../components/meal';
 import Axios from 'axios';
 
@@ -25,12 +25,23 @@ export class Dashboard extends React.Component<any, dashboardState> {
 
   componentDidMount() {
     Axios.get(`${BACKEND_URL}/meals`).then((res) => {
-      console.log(res.data);
       this.setState({
         meals: res.data.log,
         total: res.data.total
       })
     })
+  }
+
+  getAllStatistics() {
+    let buffer: any = [];
+    _.forEach(this.state.total, (val, key) => {
+      buffer.push(
+      <List.Item key={key}>
+        <Statistic title={key.charAt(0).toUpperCase() + key.slice(1)} value={val} />
+      </List.Item>
+      )
+    })
+    return buffer;
   }
 
   render () {
@@ -42,7 +53,7 @@ export class Dashboard extends React.Component<any, dashboardState> {
               </div>
               <Row gutter={16}>
                 <Col span={16}>
-                  <Card title="Meals From Today" bordered>
+                  <Card title="Meals From Today" bordered className="card">
                     <List
                       itemLayout="vertical"
                       size="large"
@@ -59,6 +70,14 @@ export class Dashboard extends React.Component<any, dashboardState> {
                         )
                       }
                     />
+                  </Card>
+                  <Card title="Statistics" bordered className="card">
+                    <List
+                      grid={{ gutter: 16, column: 4}}
+                      renderItem={() => {}}
+                    >
+                      {this.getAllStatistics()}
+                    </List>
                   </Card>
                 </Col>
                 <Col span={8}>
