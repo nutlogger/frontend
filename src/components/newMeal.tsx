@@ -2,6 +2,7 @@ import * as React from 'react';
 import axios from 'axios';
 import { Button, Form, Input, Icon, InputNumber, Upload, message, Row, Col} from 'antd';
 import { UserHeader } from './header';
+import { NutritionField } from './nutritionField';
 
 const BACKEND_URL='https://f9e15757.ngrok.io';
 
@@ -303,24 +304,9 @@ class NewMeal extends React.Component<any, newMealFormState> {
                 </div>
               )}
             </Form.Item>
-            <Form.Item
-              label="Carbohydrate"
-            >
-              {getFieldDecorator('carb', {
-                validateTrigger: ['onChange', 'onBlur'],
-                rules: [{
-                  required: false,
-                  whitespace: true,
-                  message: "Please provide the carbohydrate info.",
-                }],
-              })(
-                <div>
-                  <div>
-                    <InputNumber placeholder="Carbohydrate" style={{ width: '20em', marginRight: 8 }} />
-                  </div>
-                </div>
-              )}
-            </Form.Item>
+            <NutritionField label="Carbonhydrate" id="carb" getFieldDecorator={getFieldDecorator} required={false} />
+            <NutritionField label="Sugar" id="sugar" getFieldDecorator={getFieldDecorator} required={false} style={{marginLeft: '30px'}}/>
+            <NutritionField label="Protein" id="protein" getFieldDecorator={getFieldDecorator} required={false} />
           </div>
         </div>
       </div>
