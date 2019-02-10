@@ -28,12 +28,14 @@ class NewMeal extends React.Component<any, newMealFormState> {
 
   componentDidMount() {
     axios.post(`${BACKEND_URL}/meals`).then((res) => {
-      if (res.data.isSuccessful) {
+      if (res.data.isSuccess) {
+        console.log('created a new meal')
         this.setState({
           meal_id: res.data.id
         });
       } else {
         // TODO DISPLAY ERROR REDIRECT
+        console.log('New meal failed')
       }
     });
   }
@@ -90,15 +92,11 @@ class NewMeal extends React.Component<any, newMealFormState> {
       input_tracker: temp
     })
     if (val && quantity && val.length > 0 && quantity.length > 0) {
-      // axios.put(`${BACKEND_URL}/meals`, {
-      //   id: this.state.meal_id,
-      //   name: val,
-      //   quantity
-      // })
       const temp = this.state.input_tracker;
       temp[id].loading = false;
       temp[id].completed = true;
       temp[id].name = val;
+      temp[id].quantity = quantity;
       this.setState({
         input_tracker: temp
       });
@@ -124,15 +122,37 @@ class NewMeal extends React.Component<any, newMealFormState> {
   }
 
   render () {
+    const $this = this;
     const { Dragger } = Upload;
     const draggerProps = {
-      name: 'file',
       multiple: true,
       customRequest: (info: any) => {
+        const id = parseInt(info.filename.substring(7));
+        const input = this.state.input_tracker[id];
         this.getBase64(info.file)
         .then(
           (data: any) => {
-            // axios.post(`${BACKEND_URL}/`)
+            const content = data.substring(data.indexOf(',')+1);
+            console.log(info);
+            axios.put(`${BACKEND_URL}/meals`, {
+              name: input.name,
+              id: this.state.meal_id,
+              quantity: input.quantity,
+              content
+            }).then(function (response) {
+              console.log(response.data);
+              const temp = $this.state.input_tracker;
+              temp.response = response.data;
+              $this.setState({
+                input_tracker: temp
+              });
+              info.onSuccess();
+            })
+            .catch(function (error) {
+              message.error('Failed to collect info.')
+              console.log(error);
+              info.onError();
+            });
           }
         );
       },
@@ -214,96 +234,25 @@ class NewMeal extends React.Component<any, newMealFormState> {
         </div>
         <div style={{ width: '60%', marginRight: 8 }} hidden={!this.state.input_tracker[k].completed}>
           <h4>Upload Nutrition Label for {this.state.input_tracker[k].name}, or <a>Enter Nutrition Info Manually</a></h4>
-          <Dragger {...draggerProps} >
-            <p className="ant-upload-drag-icon">
+          <Dragger {...draggerProps} name={`upload_${k}`}>
+            <p className="ant-upload-drag-icon" >
               <Icon type="inbox" />
             </p>
             <p className="ant-upload-text">Click or drag file to this area to upload</p>
             <p className="ant-upload-hint">Please upload the nutrition label of this ingredient. Max 8 mb.</p>
           </Dragger>
           <div>
-            <h3 className="mt-30">Modify Nutrition Info Manually.</h3>
-            <Form.Item
-              label="Calories"
-            >
-              {getFieldDecorator('calories', {
-                validateTrigger: ['onChange', 'onBlur'],
-                rules: [{
-                  required: true,
-                  whitespace: true,
-                  message: "Please provide the calorie count.",
-                }],
-              })(
-                <div>
-                  <div>
-                    <InputNumber placeholder="Calories" style={{ width: '20em', marginRight: 8 }} />
-                  </div>
-                </div>
-              )}
-            </Form.Item>
+            <h3 className="mt-30">Nutrition Info.</h3>
+            <NutritionField label="Calories" id="calories" getFieldDecorator={getFieldDecorator} required={true} />
             <Row gutter={16}>
               <Col span={12}>
-                <Form.Item
-                  {...(nutritionForm)}
-                  label="Saturated Fat"
-                >
-                  {getFieldDecorator('fat', {
-                    validateTrigger: ['onChange', 'onBlur'],
-                    rules: [{
-                      required: false,
-                      whitespace: true,
-                      message: "Please provide the Saturated Fat info.",
-                    }],
-                  })(
-                    <div>
-                      <div>
-                        <InputNumber placeholder="Fat" style={{ width: '20em', marginRight: 8 }} />
-                      </div>
-                    </div>
-                  )}
-                </Form.Item>
+                <NutritionField label="Saturated Fat" id="satFat" getFieldDecorator={getFieldDecorator} required={false} />
               </Col>
               <Col span={12}>
-                <Form.Item
-              
-                {...(nutritionForm)}
-                label="Trans. Fat"
-              >
-                {getFieldDecorator('t_fat', {
-                  validateTrigger: ['onChange', 'onBlur'],
-                  rules: [{
-                    required: false,
-                    whitespace: true,
-                    message: "Please provide the trans. fat info.",
-                  }],
-                })(
-                  <div>
-                    <div>
-                      <InputNumber id={`quanity_${k}`} placeholder="Calories" style={{ width: '20em', marginRight: 8 }} />
-                    </div>
-                  </div>
-                )}
-              </Form.Item>
+                <NutritionField label="Trans. Fat" id="transFat" getFieldDecorator={getFieldDecorator} required={false} />
               </Col>
             </Row>
-            <Form.Item
-              label="Sodium"
-            >
-              {getFieldDecorator('sodium', {
-                validateTrigger: ['onChange', 'onBlur'],
-                rules: [{
-                  required: false,
-                  whitespace: true,
-                  message: "Please provide the sodium info.",
-                }],
-              })(
-                <div>
-                  <div>
-                    <InputNumber placeholder="Sodium" style={{ width: '20em', marginRight: 8 }} />
-                  </div>
-                </div>
-              )}
-            </Form.Item>
+            <NutritionField label="Sodium" id="sodium" getFieldDecorator={getFieldDecorator} required={false} />
             <NutritionField label="Carbonhydrate" id="carb" getFieldDecorator={getFieldDecorator} required={false} />
             <NutritionField label="Sugar" id="sugar" getFieldDecorator={getFieldDecorator} required={false} style={{marginLeft: '30px'}}/>
             <NutritionField label="Protein" id="protein" getFieldDecorator={getFieldDecorator} required={false} />

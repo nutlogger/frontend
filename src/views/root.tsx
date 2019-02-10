@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Layout, Menu, Button, Icon, Row, Col, Card, List } from 'antd';
+import { Layout, Menu } from 'antd';
 import { Dashboard } from './dashboard';
 import { WrappedNewMealForm } from '../components/newMeal';
 
@@ -11,17 +11,16 @@ export class Root extends React.Component {
             <div>
                 <Layout className="layout">
                     <Header>
-                    <div className="logo"></div>
-                    <Menu
-                        theme="dark"
-                        mode="horizontal"
-                        defaultSelectedKeys={['1']}
-                        style={{ lineHeight: '64px' }}
-                    >
-                        <Menu.Item key="1">Dashboard</Menu.Item>
-                        <Menu.Item key="2">Create New </Menu.Item>
-                        <Menu.Item key="3">About Us</Menu.Item>
-                    </Menu>
+                        <Menu
+                            theme="dark"
+                            mode="horizontal"
+                            defaultSelectedKeys={['1']}
+                            style={{ lineHeight: '64px' }}
+                        >
+                            <Menu.Item key="1">Dashboard</Menu.Item>
+                            <Menu.Item key="2">Create New </Menu.Item>
+                            <Menu.Item key="3">About Us</Menu.Item>
+                        </Menu>
                     </Header>
                     <Content>
                         <WrappedNewMealForm />

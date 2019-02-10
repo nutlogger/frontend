@@ -1,27 +1,28 @@
 import * as React from 'react';
 
-import { Layout, Button, Icon, Row, Col, Card, List } from 'antd';
+import { Button, Icon, Row, Col, Card, List } from 'antd';
 import { UserHeader } from '../components/header';
 import { Meal } from '../components/meal';
+import Axios from 'axios';
 
-export class Dashboard extends React.Component {
+const BACKEND_URL='https://f9e15757.ngrok.io';
+
+type dashboardState = {
+  meals: any
+}
+
+export class Dashboard extends React.Component<any, dashboardState> {
+  state: dashboardState = {
+    meals: []
+  }
+
+  componentDidMount() {
+    Axios.get(`${BACKEND_URL}/meals`).then((res) => {
+      console.log(res.data);
+    })
+  }
+
   render () {
-    let data = [];
-    for(let i = 0; i < 5; i++) {
-      data.push( {
-        id: `${i}+t`,
-        item: {
-          title: 'A Quick Saturday Night Meal.',
-          content: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.',
-          image: 'https://picsum.photos/800/1200?image=835',
-          time: '12:40 AM',
-          nutrition: {
-            calories: 867
-          }
-        }
-      })
-    }
-
     return (
           <div>
             <UserHeader calorie_count={2000} calorie_target={4000} />
@@ -35,7 +36,7 @@ export class Dashboard extends React.Component {
                     <List
                       itemLayout="vertical"
                       size="large"
-                      dataSource={data}
+                      dataSource={null}
                       pagination={{
                         onChange: (page) => {
                           console.log(page);
