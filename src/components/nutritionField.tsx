@@ -6,6 +6,7 @@ type nutritionProps = {
     label: string;
     getFieldDecorator: (id: any, options: any) => any;
     required: boolean
+    value?: number;
     style?: any
 }
 
@@ -24,7 +25,7 @@ export const NutritionField = (props: nutritionProps) =>
         })(
         <div>
             <div>
-            <InputNumber placeholder={props.label} style={{ width: '20em', marginRight: 8 }} />
+            <InputNumber placeholder={props.label} value={props.value} style={{ width: '10em', marginRight: 8 }} disabled />
             </div>
         </div>
         )}

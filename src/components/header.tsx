@@ -1,6 +1,9 @@
 import * as React from 'react'
-import { Row, Col, Avatar, Button, Icon } from 'antd';
+import { Row, Col, Avatar} from 'antd';
 import { HeaderBadge } from './headerbadge';
+import Axios from 'axios';
+
+const BACKEND_URL='https://f9e15757.ngrok.io';
 
 export type userHeaderProps = {
   calorie_count: number;
@@ -19,14 +22,28 @@ type userHeaderState = {
   profile_pic: string;
   username: string;
   email: string;
+  total: any
 }
 
 export class UserHeader extends React.Component<userHeaderProps, userHeaderState> {
   state: userHeaderState = {
     profile_pic: 'https://randomuser.me/api/portraits/women/17.jpg',
-    username: 'Shwan Patel',
-    email: 'shwan.patel@nutlogger.com'
+    username: 'Emma Chen',
+    email: 'emma.chen@nutlogger.com',
+    total: {
+      calories: 0
+    }
   }
+
+  componentDidMount() {
+    Axios.get(`${BACKEND_URL}/meals`).then((res) => {
+      console.log(res.data);
+      this.setState({
+        total: res.data.total
+      })
+    })
+  }
+
   render () {
     const { username, email, profile_pic } = this.state;
     return (
@@ -42,14 +59,14 @@ export class UserHeader extends React.Component<userHeaderProps, userHeaderState
           </Col>
           <Col span={4}>
             <p className="opacity-hidden">Your Calories</p>
-            <HeaderBadge target={2500} current={1000} title="Calories" unit="cals" />
+            <HeaderBadge target={2500} current={this.state.total.calories} title="Calories" unit="cals" />
           </Col>
           <Col span={14}>
-            <p>Your Goal Towards KETO Diet</p>
+            <p>Your Goals</p>
             <div className="v-center space-around">
-              <HeaderBadge target={44} current={32} title="Fat" unit="g" />
-              <HeaderBadge target={30} current={12} title="Sodium" unit="mg" />
-              <HeaderBadge target={50} current={42} title="Carbohydrate" unit="g" />
+              <HeaderBadge target={64} current={this.state.total.fat} title="Fat" unit="g" />
+              <HeaderBadge target={2378} current={this.state.total.sodium} title="Sodium" unit="mg" />
+              <HeaderBadge target={290} current={this.state.total.carbohydrate} title="Carbohydrate" unit="g" />
             </div>
           </Col>
         </Row>

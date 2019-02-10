@@ -1,6 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
-import { Button, Form, Input, Icon, InputNumber, Upload, message, Row, Col} from 'antd';
+import * as _ from 'lodash';
+import { Button, Form, Input, Icon, InputNumber, Upload, message} from 'antd';
 import { UserHeader } from './header';
 import { NutritionField } from './nutritionField';
 
@@ -9,6 +10,7 @@ const BACKEND_URL='https://f9e15757.ngrok.io';
 type newMealFormState = {
   counter: number;
   meal_id: string;
+  has_ingredients: boolean;
   input_tracker?: any
 }
 
@@ -16,6 +18,7 @@ class NewMeal extends React.Component<any, newMealFormState> {
   state: newMealFormState = {
     counter: 0,
     meal_id: '',
+    has_ingredients: false,
     input_tracker: []
   }
 
@@ -24,6 +27,8 @@ class NewMeal extends React.Component<any, newMealFormState> {
     this.handleAdd = this.handleAdd.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleNewIngredientInput = this.handleNewIngredientInput.bind(this);
+    this.recieveImageFeedback = this.recieveImageFeedback.bind(this);
+    this.makeNutritionDetails = this.makeNutritionDetails.bind(this);
   }
 
   componentDidMount() {
@@ -94,7 +99,7 @@ class NewMeal extends React.Component<any, newMealFormState> {
     if (val && quantity && val.length > 0 && quantity.length > 0) {
       const temp = this.state.input_tracker;
       temp[id].loading = false;
-      temp[id].completed = true;
+      temp[id].created = true;
       temp[id].name = val;
       temp[id].quantity = quantity;
       this.setState({
@@ -104,7 +109,7 @@ class NewMeal extends React.Component<any, newMealFormState> {
     } else {
       const temp = this.state.input_tracker;
       temp[id].loading = false;
-      temp[id].completed = false;
+      temp[id].created = false;
       this.setState({
         input_tracker: temp
       });
@@ -121,8 +126,37 @@ class NewMeal extends React.Component<any, newMealFormState> {
     });
   }
 
+  recieveImageFeedback(info: any) {
+    const status = info.file.status;
+    if (status !== 'uploading') {
+      console.log(info.file, info.fileList);
+    }
+    if (status === 'done') {
+      console.log(`${info.file.name} file uploaded successfully.`);
+      const id = info.file.response.id;
+      const temp = this.state.input_tracker;
+      temp[id].response = info.file.response;
+      temp[id].completed = true;
+      this.setState({
+        input_tracker: temp,
+        has_ingredients: true
+      });
+    } else if (status === 'error') {
+      console.log(`${info.file.name} file upload failed.`);
+    }
+  }
+
+  makeNutritionDetails(info: any, gfd: any) {
+    let fields: any = [];
+    _.forEach(info, (value: number, key: string) => {
+      if (!((key == 'name') || (key == 'quantity'))) {
+        fields.push(<NutritionField key={key} label={key.toLocaleUpperCase()} value={value} id={key} getFieldDecorator={gfd} required={false} />)
+      }
+    })
+    return fields;
+  }
+
   render () {
-    const $this = this;
     const { Dragger } = Upload;
     const draggerProps = {
       multiple: true,
@@ -141,12 +175,9 @@ class NewMeal extends React.Component<any, newMealFormState> {
               content
             }).then(function (response) {
               console.log(response.data);
-              const temp = $this.state.input_tracker;
-              temp.response = response.data;
-              $this.setState({
-                input_tracker: temp
-              });
-              info.onSuccess();
+              let buffer = response.data;
+              buffer.id = id;
+              info.onSuccess(response.data);
             })
             .catch(function (error) {
               message.error('Failed to collect info.')
@@ -156,17 +187,6 @@ class NewMeal extends React.Component<any, newMealFormState> {
           }
         );
       },
-      onChange(info: any) {
-        const status = info.file.status;
-        if (status !== 'uploading') {
-          console.log(info.file, info.fileList);
-        }
-        if (status === 'done') {
-          console.log(`${info.file.name} file uploaded successfully.`);
-        } else if (status === 'error') {
-          console.log(`${info.file.name} file upload failed.`);
-        }
-      },
     }
 
     const { getFieldDecorator, getFieldValue } = this.props.form;
@@ -175,12 +195,6 @@ class NewMeal extends React.Component<any, newMealFormState> {
         xs: { span: 24, offset: 0 },
         sm: { span: 24, offset: 0 },
         md: { span: 24 },
-      },
-    };
-    const nutritionForm = {
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 24 },
       },
     };
     getFieldDecorator('keys', { initialValue: [] });
@@ -203,8 +217,8 @@ class NewMeal extends React.Component<any, newMealFormState> {
               }],
             })(
               <div>
-                <Input placeholder="Food Name" style={{ width: '30em', marginRight: 8 }} disabled={this.state.input_tracker[k].loading || this.state.input_tracker[k].completed} />
-                {(keys.length > 1 && !this.state.input_tracker[k].loading && !this.state.input_tracker[k].completed) ? (<Icon className="dynamic-delete-button" type="minus-circle-o" onClick={() => this.handleDelete(k)}/>) : null}
+                <Input placeholder="Food Name" style={{ width: '30em', marginRight: 8 }} disabled={this.state.input_tracker[k].loading || this.state.input_tracker[k].created} />
+                {(keys.length > 1 && !this.state.input_tracker[k].loading && !this.state.input_tracker[k].created) ? (<Icon className="dynamic-delete-button" type="minus-circle-o" onClick={() => this.handleDelete(k)}/>) : null}
               </div>
             )}
           </Form.Item>
@@ -221,7 +235,7 @@ class NewMeal extends React.Component<any, newMealFormState> {
               })(
                 <div>
                   <div>
-                    <InputNumber id={`quanity_${k}`} placeholder="Quantity" disabled={this.state.input_tracker[k].loading || this.state.input_tracker[k].completed} />
+                    <InputNumber id={`quanity_${k}`} placeholder="Quantity" disabled={this.state.input_tracker[k].loading || this.state.input_tracker[k].created} />
                   </div>
                 </div>
               )}
@@ -229,40 +243,32 @@ class NewMeal extends React.Component<any, newMealFormState> {
           <Form.Item
           {...(formItemLayoutWithOutLabel)}
         >
-          <Button type="primary" id={`${k}`} onClick={this.handleNewIngredientInput} loading={this.state.input_tracker[k].loading} disabled={this.state.input_tracker[k].completed} >Create</Button>
+          <Button type="primary" id={`${k}`} onClick={this.handleNewIngredientInput} loading={this.state.input_tracker[k].loading} disabled={this.state.input_tracker[k].created} >Create</Button>
         </Form.Item>
         </div>
-        <div style={{ width: '60%', marginRight: 8 }} hidden={!this.state.input_tracker[k].completed}>
-          <h4>Upload Nutrition Label for {this.state.input_tracker[k].name}, or <a>Enter Nutrition Info Manually</a></h4>
-          <Dragger {...draggerProps} name={`upload_${k}`}>
+        <div style={{ width: '60%', marginRight: 8 }} hidden={!this.state.input_tracker[k].created || this.state.input_tracker[k].completed }>
+          <h4>Upload Nutrition Label for {this.state.input_tracker[k].name}</h4>
+          <Dragger {...draggerProps} name={`upload_${k}`} onChange={this.recieveImageFeedback}>
             <p className="ant-upload-drag-icon" >
               <Icon type="inbox" />
             </p>
             <p className="ant-upload-text">Click or drag file to this area to upload</p>
             <p className="ant-upload-hint">Please upload the nutrition label of this ingredient. Max 8 mb.</p>
           </Dragger>
+          {this.state.input_tracker[k].response ? 
+            <div>
+              <h3 className="mt-30">Nutrition Info for {this.state.input_tracker[k].response.log.meals[k].name}.</h3>
+              {this.makeNutritionDetails(this.state.input_tracker[k].response.log.meals[k], getFieldDecorator)}
+            </div> 
+          : null}
           <div>
-            <h3 className="mt-30">Nutrition Info.</h3>
-            <NutritionField label="Calories" id="calories" getFieldDecorator={getFieldDecorator} required={true} />
-            <Row gutter={16}>
-              <Col span={12}>
-                <NutritionField label="Saturated Fat" id="satFat" getFieldDecorator={getFieldDecorator} required={false} />
-              </Col>
-              <Col span={12}>
-                <NutritionField label="Trans. Fat" id="transFat" getFieldDecorator={getFieldDecorator} required={false} />
-              </Col>
-            </Row>
-            <NutritionField label="Sodium" id="sodium" getFieldDecorator={getFieldDecorator} required={false} />
-            <NutritionField label="Carbonhydrate" id="carb" getFieldDecorator={getFieldDecorator} required={false} />
-            <NutritionField label="Sugar" id="sugar" getFieldDecorator={getFieldDecorator} required={false} style={{marginLeft: '30px'}}/>
-            <NutritionField label="Protein" id="protein" getFieldDecorator={getFieldDecorator} required={false} />
+            
           </div>
         </div>
       </div>
     ));
     return (
       <div>
-        <UserHeader calorie_count={2000} calorie_target={4000} />
         <div style={{ padding: '30px 50px' }}>
           <h2>Create a new Meal</h2>
           <Form>
@@ -274,7 +280,7 @@ class NewMeal extends React.Component<any, newMealFormState> {
               </Button>
             </Form.Item>
             <Form.Item {...formItemLayoutWithOutLabel}>
-              <Button type="primary" htmlType="submit" disabled>Submit</Button>
+              <Button type="primary" htmlType="submit" size="large" style={{ width: '60%' }} disabled={!this.state.has_ingredients}>Done</Button>
             </Form.Item>
           </Form>
         </div>
