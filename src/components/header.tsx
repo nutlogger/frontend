@@ -57,7 +57,7 @@ export class UserHeader extends React.Component<userHeaderProps, userHeaderState
     return (
       <div className="user-header">
         <Row gutter={48} className="v-center">
-          <Col span={6} className="user-info-container">
+          <Col span={8} className="user-info-container">
             <Avatar icon="user" shape="circle" size={120} src={profile_pic} />
             <div>
               <h2 className="no-margin">{username}</h2>
@@ -69,7 +69,7 @@ export class UserHeader extends React.Component<userHeaderProps, userHeaderState
             <p className="opacity-hidden">Your Calories</p>
             <HeaderBadge target={2500} current={this.state.total.calories} title="Calories" unit="cals" />
           </Col>
-          <Col span={14}>
+          <Col span={12}>
             <h4>Your Goals</h4>
             <div className="v-center space-around">
               <HeaderBadge target={64} current={this.state.total.fat} title="Fat" unit="g" />

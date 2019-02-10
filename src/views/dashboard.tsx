@@ -98,16 +98,16 @@ export class Dashboard extends React.Component<any, dashboardState> {
                   </Card>
                   <Card title="Other Nutrient Intake" bordered className="mt-15">
                     <div className="nut-process">Carbohydrate<Progress percent={Math.round(this.state.total.carbohydrate/290 * 100)} status="active" /></div>
-                    <div className="nut-process">Sugar<Progress percent={Math.round(this.state.total.sugar/16 * 100)} status="active" /></div>
+                    <div className="nut-process">Sugar<Progress percent={Math.round(this.state.total.sugars/200 * 100)} status="active" /></div>
                     <div className="nut-process">Cholesterol<Progress percent={Math.round(this.state.total.cholesterol/1 * 100)} status="active" /></div>
                     <div className="nut-process">Fibre<Progress percent={Math.round(this.state.total.fibre/27 * 100)} status="active" /></div>
                     <div className="nut-process">Sodium<Progress percent={Math.round(this.state.total.sodium/2378 * 100)} status="active" /></div>
                     <div className="nut-process">Protein<Progress percent={Math.round(this.state.total.protein/60 * 100)} status="active" /></div>
                   </Card>
-                  <Card title="Vitamine Intakes" bordered className="mt-15">
+                  {/* <Card title="Vitamine Intakes" bordered className="mt-15">
                     <div className="nut-process">Vitamine A<Progress percent={70} status="active" /></div>
                     <div className="nut-process">Vitamine C<Progress percent={20} status="active" /></div>
-                  </Card>
+                  </Card> */}
                 </Col>
               </Row>
             </div>

@@ -157,7 +157,6 @@ export class Meal extends React.Component<mealProps, mealState> {
               renderItem={(meal: any) => (
               <List.Item
                 key={meal.name}
-                actions={[<Icon type="star-o"/>, <Icon type="like-o" />, <Icon type="message" />]}
               >
                 <List.Item.Meta
                   title={meal.title}
