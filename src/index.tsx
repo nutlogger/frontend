@@ -7,6 +7,8 @@ import rootReducer from './reducers';
 
 import { Root } from "./views/root";
 
+import './styles/main.css'
+
 const store = createStore(rootReducer);
 
 ReactDOM.render(

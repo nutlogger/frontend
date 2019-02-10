@@ -1,0 +1,58 @@
+.user-header {
+    padding: 50px 60px;
+    background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+}
+
+.user-info-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.no-margin {
+    margin: 0;
+}
+
+.opacity-hidden {
+    opacity: 0;
+}
+
+.v-center {
+    display: flex;
+    align-items: center;
+}
+
+.space-around {
+    justify-content: start;
+}
+
+.space-around .header-badge {
+    margin-right: 64px;
+}
+
+.text-centered {
+    text-align: center
+}
+
+.text-muted {
+    color: #777;
+}
+
+.img-responsive {
+    max-width: 200px;
+}
+
+.mt-30 {
+    margin-top: 30px;
+}
+
+.mt-60 {
+    margin-top: 60px;
+}
+.mb-15 {
+    margin-bottom: 10px;
+}
+
+.mb-30 {
+    margin-bottom: 30px;
+}
