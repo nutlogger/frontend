@@ -1,9 +1,9 @@
 import * as React from 'react';
 import axios from 'axios';
 import * as _ from 'lodash';
-import { Button, Form, Input, Icon, InputNumber, Upload, message} from 'antd';
-import { UserHeader } from './header';
+import { Button, Form, Input, Icon, InputNumber, Upload, message, Steps} from 'antd';
 import { NutritionField } from './nutritionField';
+import { Link, Redirect } from 'react-router-dom';
 
 const BACKEND_URL='https://f9e15757.ngrok.io';
 
@@ -11,7 +11,14 @@ type newMealFormState = {
   counter: number;
   meal_id: string;
   has_ingredients: boolean;
-  input_tracker?: any
+  input_tracker?: any;
+  redirect: boolean;
+  process_tracker: {
+    step1: 'wait' | 'process' | 'error' | 'finish' ;
+    step2: 'wait' | 'process' | 'error' | 'finish' ;
+    step3: 'wait' | 'process' | 'error' | 'finish' ;
+    step4: 'wait' | 'process' | 'error' | 'finish' ;
+  }
 }
 
 class NewMeal extends React.Component<any, newMealFormState> {
@@ -19,7 +26,14 @@ class NewMeal extends React.Component<any, newMealFormState> {
     counter: 0,
     meal_id: '',
     has_ingredients: false,
-    input_tracker: []
+    input_tracker: [],
+    redirect: false,
+    process_tracker: {
+      step1: 'process',
+      step2: 'wait',
+      step3: 'wait',
+      step4: 'wait'
+    }
   }
 
   constructor(props: any) {
@@ -103,7 +117,13 @@ class NewMeal extends React.Component<any, newMealFormState> {
       temp[id].name = val;
       temp[id].quantity = quantity;
       this.setState({
-        input_tracker: temp
+        input_tracker: temp,
+        process_tracker: {
+          step1: 'finish',
+          step2: 'process',
+          step3: 'wait',
+          step4: 'wait'
+        }
       });
       message.success('Item created!');
     } else {
@@ -113,8 +133,20 @@ class NewMeal extends React.Component<any, newMealFormState> {
       this.setState({
         input_tracker: temp
       });
-      message.error("Your input is bad yo.")
+      message.error("Your input is bad yo.");
     }
+  }
+
+  handleDone() {
+    this.setState({
+      process_tracker: {
+        step1: 'finish',
+        step2: 'finish',
+        step3: 'finish',
+        step4: 'process'
+      },
+      redirect: true
+    })
   }
 
   getBase64(file: File) {
@@ -139,8 +171,15 @@ class NewMeal extends React.Component<any, newMealFormState> {
       temp[id].completed = true;
       this.setState({
         input_tracker: temp,
-        has_ingredients: true
+        has_ingredients: true,
+        process_tracker: {
+          step1: 'finish',
+          step2: 'finish',
+          step3: 'process',
+          step4: 'wait'
+        }
       });
+      message.success('Nutrition Info GET!');
     } else if (status === 'error') {
       console.log(`${info.file.name} file upload failed.`);
     }
@@ -197,6 +236,7 @@ class NewMeal extends React.Component<any, newMealFormState> {
         md: { span: 24 },
       },
     };
+
     getFieldDecorator('keys', { initialValue: [] });
     const keys = getFieldValue('keys');
     const formItems = keys.map((k: any) => (
@@ -218,7 +258,6 @@ class NewMeal extends React.Component<any, newMealFormState> {
             })(
               <div>
                 <Input placeholder="Food Name" style={{ width: '30em', marginRight: 8 }} disabled={this.state.input_tracker[k].loading || this.state.input_tracker[k].created} />
-                {(keys.length > 1 && !this.state.input_tracker[k].loading && !this.state.input_tracker[k].created) ? (<Icon className="dynamic-delete-button" type="minus-circle-o" onClick={() => this.handleDelete(k)}/>) : null}
               </div>
             )}
           </Form.Item>
@@ -241,10 +280,11 @@ class NewMeal extends React.Component<any, newMealFormState> {
               )}
           </Form.Item>
           <Form.Item
-          {...(formItemLayoutWithOutLabel)}
-        >
-          <Button type="primary" id={`${k}`} onClick={this.handleNewIngredientInput} loading={this.state.input_tracker[k].loading} disabled={this.state.input_tracker[k].created} >Create</Button>
-        </Form.Item>
+            {...(formItemLayoutWithOutLabel)}
+          >
+            <Button type="primary" id={`${k}`} onClick={this.handleNewIngredientInput} loading={this.state.input_tracker[k].loading} disabled={this.state.input_tracker[k].created} >Create</Button>
+          </Form.Item>
+          {(keys.length > 1 && !this.state.input_tracker[k].loading && !this.state.input_tracker[k].created) ? (<Icon className="dynamic-delete-button" type="minus-circle-o" onClick={() => this.handleDelete(k)}/>) : null}
         </div>
         <div style={{ width: '60%', marginRight: 8 }} hidden={!this.state.input_tracker[k].created || this.state.input_tracker[k].completed }>
           <h4>Upload Nutrition Label for {this.state.input_tracker[k].name}</h4>
@@ -269,18 +309,26 @@ class NewMeal extends React.Component<any, newMealFormState> {
     ));
     return (
       <div>
+        {this.state.redirect ? <Redirect to="/" /> : null}
         <div style={{ padding: '30px 50px' }}>
           <h2>Create a new Meal</h2>
-          <Form>
-            <h3>Ingredients</h3>
+          <Steps>
+            <Steps.Step status={this.state.process_tracker.step1} title="Add An Ingredient" icon={<Icon type="edit" />} />
+            <Steps.Step status={this.state.process_tracker.step2} title="Get Nutrition Label" icon={<Icon type="camera" />} />
+            <Steps.Step status={this.state.process_tracker.step3} title="Add More Ingredients" icon={<Icon type="plus" />} />
+            <Steps.Step status={this.state.process_tracker.step4} title="Done!" icon={<Icon type="smile-o" />} />
+          </Steps>
+          <Form className="mt-15">
             {formItems}
-            <Form.Item {...formItemLayoutWithOutLabel} className="mt-60">
-              <Button type="dashed" onClick={this.handleAdd} style={{ width: '60%' }}>
+            <Form.Item {...formItemLayoutWithOutLabel} className="mt-30">
+              <Button type="primary" onClick={this.handleAdd} style={{ width: '100%' }}>
                 <Icon type="plus" /> Add Ingredient
               </Button>
             </Form.Item>
             <Form.Item {...formItemLayoutWithOutLabel}>
-              <Button type="primary" htmlType="submit" size="large" style={{ width: '60%' }} disabled={!this.state.has_ingredients}>Done</Button>
+              <Link to="/" replace>
+                <Button type="primary" size="large" style={{ width: '100%' }} disabled={!this.state.has_ingredients}>Done</Button>
+              </Link>
             </Form.Item>
           </Form>
         </div>

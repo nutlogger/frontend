@@ -41,7 +41,15 @@ export class UserHeader extends React.Component<userHeaderProps, userHeaderState
       this.setState({
         total: res.data.total
       })
-    })
+    });
+    setInterval(() => {
+      Axios.get(`${BACKEND_URL}/meals`).then((res) => {
+        console.log(res.data);
+        this.setState({
+          total: res.data.total
+        })
+      });
+    }, 5000)
   }
 
   render () {
@@ -62,7 +70,7 @@ export class UserHeader extends React.Component<userHeaderProps, userHeaderState
             <HeaderBadge target={2500} current={this.state.total.calories} title="Calories" unit="cals" />
           </Col>
           <Col span={14}>
-            <p>Your Goals</p>
+            <h4>Your Goals</h4>
             <div className="v-center space-around">
               <HeaderBadge target={64} current={this.state.total.fat} title="Fat" unit="g" />
               <HeaderBadge target={2378} current={this.state.total.sodium} title="Sodium" unit="mg" />

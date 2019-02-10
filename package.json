@@ -25,6 +25,7 @@
     "@types/react-dom": "^16.8.0",
     "@types/react-redux": "^7.0.1",
     "@types/react-router-dom": "^4.3.1",
+    "@types/react-transition-group": "^2.0.15",
     "@types/redux": "^3.6.0",
     "antd": "^3.13.2",
     "axios": "^0.18.0",
@@ -35,11 +36,13 @@
     "react-dom": "^16.8.1",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
+    "react-transition-group": "^2.5.3",
     "redux": "^4.0.1",
     "webpack-cli": "^3.2.3"
   },
   "devDependencies": {
     "awesome-typescript-loader": "^5.2.1",
+    "file-loader": "^3.0.1",
     "source-map-loader": "^0.2.4",
     "typescript": "^3.3.3",
     "webpack-dev-server": "^3.1.14"

@@ -61,6 +61,7 @@
 .mt-60 {
     margin-top: 60px;
 }
+
 .mb-15 {
     margin-bottom: 10px;
 }
@@ -70,6 +71,17 @@
 }
 
 .logo {
+    width: 120px;
     margin: 16px 24px 16px 0;
     float: left;
+}
+
+.fade-enter {
+    opacity: 0;
+    z-index: 1;
+}
+
+.fade-enter.fade-enter-active {
+    opacity: 1;
+    transition: opacity 250ms ease-in;
 }

@@ -30,6 +30,14 @@ export class Dashboard extends React.Component<any, dashboardState> {
         total: res.data.total
       })
     })
+    setInterval(() => {
+      Axios.get(`${BACKEND_URL}/meals`).then((res) => {
+        this.setState({
+          meals: res.data.log,
+          total: res.data.total
+        })
+      })
+    }, 5000);
   }
 
   getAllStatistics() {
@@ -66,7 +74,7 @@ export class Dashboard extends React.Component<any, dashboardState> {
                       }}
                       renderItem={
                         (item: any) => (
-                          <Meal key={item._id} item={{content: 'Thoughts are an important part of our body’s wisdom because we have the ability to change our minds (and our thoughts) as we learn to grow. A thought held long enough and repeated enough becomes a belief. ', nutrition: {calories: (item.total ? item.total.calories : 0)}}} date={new Date(item.createdAt)} />
+                          <Meal key={item._id} meal_plan={item} item={{content: 'Thoughts are an important part of our body’s wisdom because we have the ability to change our minds (and our thoughts) as we learn to grow. A thought held long enough and repeated enough becomes a belief. ', nutrition: {calories: (item.total ? item.total.calories : 0)}}} date={new Date(item.createdAt)}/>
                         )
                       }
                     />
