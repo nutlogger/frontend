@@ -93,7 +93,7 @@ export class Dashboard extends React.Component<any, dashboardState> {
                     <Progress percent={Math.round(this.state.total.calories/2500 * 100)} status="active" />
                   </Card>
                   <Card title="Daily Fat Intake" bordered className="mt-15">
-                    <div className="nut-process">Saturated<Progress percent={Math.round(this.state.total.fat/64 * 100)} status="active" /></div>
+                    <div className="nut-process">Saturated<Progress percent={Math.round(this.state.total.fat/200 * 100)} status="active" /></div>
                     <div className="nut-process">Trans-Fat<Progress percent={Math.round(this.state.total.trans/3 * 100)} status="active" /></div>
                   </Card>
                   <Card title="Other Nutrient Intake" bordered className="mt-15">

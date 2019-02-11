@@ -72,7 +72,7 @@ export class UserHeader extends React.Component<userHeaderProps, userHeaderState
           <Col span={12}>
             <h4>Your Goals</h4>
             <div className="v-center space-around">
-              <HeaderBadge target={64} current={this.state.total.fat} title="Fat" unit="g" />
+              <HeaderBadge target={200} current={this.state.total.fat} title="Fat" unit="g" />
               <HeaderBadge target={2378} current={this.state.total.sodium} title="Sodium" unit="mg" />
               <HeaderBadge target={290} current={this.state.total.carbohydrate} title="Carbohydrate" unit="g" />
             </div>
