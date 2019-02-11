@@ -1,4 +1,6 @@
-![Nutlogger Co.](https://i.ibb.co/St5stsT/nutlogger-dark.png)
+<p align="center">
+  <img src="https://i.ibb.co/St5stsT/nutlogger-dark.png" alt="Nutlogger Co." />
+</p>
 
 **Winner of uOttahack 2019 Best Design Awards** 
 
